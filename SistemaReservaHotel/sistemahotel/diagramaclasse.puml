@@ -1,0 +1,113 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam classFontStyle bold
+skinparam classBackgroundColor #F0F8FF
+skinparam linetype ortho
+
+' === Classes principais ===
+class Cliente {
+    - idCliente: int
+    - nome: String
+    - email: String
+    - senha: String
+    - telefone: String
+    --
+    + cadastrar()
+    + login(email: String, senha: String)
+    + realizarReserva()
+    + selecionarServicosAdicionais()
+    + realizarPagamento()
+}
+
+class Reserva {
+    - idReserva: int
+    - dataCheckIn: Date
+    - dataCheckOut: Date
+    - valorTotal: double
+    - status: String
+    --
+    + calcularValorTotal()
+    + cancelar()
+}
+
+class Quarto {
+    - idQuarto: int
+    - numero: String
+    - tipo: String
+    - precoDiaria: double
+    - disponibilidade: boolean
+    --
+    + verificarDisponibilidade()
+    + marcarIndisponivel()
+}
+
+class Pagamento {
+    - idPagamento: int
+    - formaPagamento: String
+    - valor: double
+    - dataPagamento: Date
+    --
+    + processarPagamento()
+    + emitirRecibo()
+}
+
+class ServicoAdicional {
+    - idServico: int
+    - nome: String
+    - valor: double
+    --
+    + calcularCusto()
+}
+
+class Recepcionista {
+    - idFuncionario: int
+    - nome: String
+    --
+    + realizarCheckin()
+    + realizarCheckout()
+    + validarDocumentos()
+    + registrarConsumo()
+    + registrarPagamento()
+}
+
+class Gerente {
+    - idGerente: int
+    - nome: String
+    --
+    + gerarRelatorios()
+    + interditarQuarto()
+    + realocarQuarto()
+}
+
+class Restaurante {
+    --
+    + direcionarClienteMesa()
+    + registrarPedido()
+    + emitirConta()
+}
+
+class Sistema {
+    --
+    + validarDadosCliente()
+    + gerarNumeroReserva()
+    + enviarConfirmacaoEmail()
+    + gerarNotificacoes()
+}
+
+' === Relacionamentos corrigidos e comentados ===
+
+Cliente "1" --> "0..*" Reserva              : "realiza reservas"
+Cliente "1" --> "0..*" Pagamento            : "efetua pagamentos"
+Cliente "1" --> "0..*" ServicoAdicional     : "seleciona serviços adicionais"
+Cliente "1" --> "0..1" Restaurante          : "utiliza restaurante"
+
+Reserva "1" --> "1..*" Quarto               : "aloca quartos"
+Reserva "1" --> "0..*" Pagamento            : "gera registros de pagamento"
+Reserva "1" --> "0..*" ServicoAdicional     : "inclui serviços adicionais"
+
+Recepcionista "1" --> "0..*" Reserva         : "gerencia reservas"
+Gerente       "1" --> "0..*" Quarto          : "administra status de quartos"
+
+Restaurante   "1" --> "0..*" Reserva         : "atende pedidos vinculados"
+
+@enduml

@@ -1,0 +1,84 @@
+@startuml
+actor Cliente
+actor Recepcionista
+actor Gerente
+participant "Site" as Web
+participant "Sistema de Reserva" as Sistema
+participant "Restaurante" as Restaurante
+database "Banco de Dados" as DB
+
+== Cadastro e Login ==
+Cliente -> Web : Acessa o site
+Web -> Cliente : Exibe formulário
+Cliente -> Web : Realiza cadastro/login
+Web -> Sistema : Envia dados do cliente
+Sistema -> DB : Valida e salva dados
+DB --> Sistema : Confirmação
+Sistema --> Web : Confirmação de login
+Web --> Cliente : Acesso liberado
+
+== Processo de Reserva ==
+Cliente -> Web : Seleciona datas, quarto e serviços adicionais
+Web -> Sistema : Envia dados da reserva
+Sistema -> DB : Verifica disponibilidade
+DB --> Sistema : Quarto disponível
+Sistema -> DB : Gera número da reserva
+Sistema -> DB : Salva reserva
+Sistema -> Cliente : Confirmação da reserva (número)
+Sistema -> Cliente : Gera notificações
+Sistema -> Cliente : Envia confirmação por e-mail
+
+== Pagamento ==
+Cliente -> Web : Realiza pagamento
+Web -> Sistema : Envia dados do pagamento
+Sistema -> DB : Registra pagamento
+Sistema -> Cliente : Envia recibo/confirmação
+
+== Check-in ==
+Recepcionista -> Cliente : Recepciona cliente na chegada
+Recepcionista -> Sistema : Consulta reserva
+Sistema -> DB : Busca dados da reserva
+DB --> Sistema : Retorna dados da reserva
+Sistema --> Recepcionista : Exibe informações
+Recepcionista -> Cliente : Solicita documentos
+Recepcionista -> Sistema : Valida documentos
+Sistema -> DB : Atualiza status check-in
+Recepcionista -> Cliente : Entrega chave/cartão do quarto
+Recepcionista -> Cliente : Instrui sobre funcionamento e comodidades
+
+== Restaurante ==
+Cliente -> Restaurante : Solicita mesa
+Restaurante -> Sistema : Verifica mesa disponível
+Sistema -> Restaurante : Confirma mesa
+Restaurante -> Cliente : Direciona à mesa
+Cliente -> Restaurante : Escolhe refeição
+Restaurante -> Sistema : Registra pedido
+Sistema -> DB : Salva pedido
+Cliente -> Restaurante : Pede a conta
+Restaurante -> Sistema : Gera conta
+Sistema -> Cliente : Exibe total
+
+== Check-out ==
+Cliente -> Recepcionista : Solicita check-out
+Recepcionista -> Sistema : Consulta consumo total
+Sistema -> DB : Busca hospedagem e consumo restaurante
+DB --> Sistema : Retorna valores
+Sistema -> Recepcionista : Informa valor total
+Recepcionista -> Cliente : Informa valor
+Cliente -> Recepcionista : Realiza pagamento
+Recepcionista -> Sistema : Registra pagamento
+Recepcionista -> Cliente : Agradece pela preferência
+
+== Gerência ==
+Gerente -> Sistema : Solicita relatório
+Sistema -> DB : Gera dados de ocupação, receita, etc
+DB --> Sistema : Retorna relatório
+Sistema -> Gerente : Exibe relatório
+
+Gerente -> Sistema : Interdita quarto
+Sistema -> DB : Atualiza status do quarto
+
+Gerente -> Sistema : Realoca quarto
+Sistema -> DB : Atualiza reserva com novo quarto
+
+@enduml
